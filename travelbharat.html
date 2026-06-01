@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TravelBharat — Discover Incredible India</title>
+<meta name="description" content="Explore India's most breathtaking destinations. State-wise tourist place listings, detailed destination guides, and curated travel experiences across Bharat.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=Yatra+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --saffron: #E8621A;
+    --saffron-light: #F4874B;
+    --saffron-pale: #FDF0E8;
+    --terracotta: #C44E1E;
+    --gold: #D4A017;
+    --gold-light: #F2C94C;
+    --emerald: #1A6B45;
+    --emerald-light: #2E9E6B;
+    --ink: #1A1209;
+    --ink-mid: #3D2E1A;
+    --sand: #F5ECD7;
+    --sand-light: #FBF6EE;
+    --muted: #8B7355;
+    --white: #FEFDFB;
+    --border: rgba(212,160,23,0.25);
+    --radius: 12px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--white);
+    color: var(--ink);
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 9999; opacity: 0.4;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 5vw;
+    height: 68px;
+    background: rgba(254,253,251,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    transition: box-shadow 0.3s;
+  }
+  nav.scrolled { box-shadow: 0 4px 24px rgba(232,98,26,0.1); }
+
+  .nav-logo {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Yatra One', cursive;
+    font-size: 1.5rem;
+    color: var(--saffron);
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--emerald); }
+  .nav-logo-dot {
+    width: 8px; height: 8px;
+    background: var(--gold);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.3)} }
+
+  .nav-links { display: flex; gap: 2rem; align-items: center; }
+  .nav-links a {
+    font-size: 0.875rem; font-weight: 500; letter-spacing: 0.03em;
+    color: var(--ink-mid); text-decoration: none;
+    position: relative; padding-bottom: 2px;
+    transition: color 0.2s;
+  }
+  .nav-links a::after {
+    content: ''; position: absolute; bottom: 0; left: 0;
+    width: 0; height: 2px; background: var(--saffron);
+    transition: width 0.3s;
+  }
+  .nav-links a:hover { color: var(--saffron); }
+  .nav-links a:hover::after { width: 100%; }
+
+  .nav-search-btn {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--saffron); color: white;
+    border: none; padding: 8px 20px; border-radius: 100px;
+    font-size: 0.85rem; font-weight: 500; cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .nav-search-btn:hover { background: var(--terracotta); transform: translateY(-1px); }
+
+  .mobile-menu-btn { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 5px; }
+  .mobile-menu-btn span { width: 22px; height: 2px; background: var(--ink); border-radius: 2px; transition: all 0.3s; display: block; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid; grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 100px 5vw 60px;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--sand-light) 0%, var(--saffron-pale) 60%, #FDE8D0 100%);
+  }
+
+  .hero-bg-pattern {
+    position: absolute; inset: 0; pointer-events: none; opacity: 0.07;
+    background-image:
+      radial-gradient(circle, var(--saffron) 1px, transparent 1px),
+      radial-gradient(circle, var(--gold) 1px, transparent 1px);
+    background-size: 40px 40px, 80px 80px;
+    background-position: 0 0, 20px 20px;
+  }
+
+  .hero-mandala {
+    position: absolute; right: -5%; top: 50%; transform: translateY(-50%);
+    width: min(550px, 55vw); height: min(550px, 55vw);
+    opacity: 0.08; pointer-events: none;
+  }
+
+  .hero-content { position: relative; z-index: 2; animation: fadeUp 0.9s ease both; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(232,98,26,0.12); color: var(--saffron);
+    border: 1px solid rgba(232,98,26,0.3);
+    padding: 6px 16px; border-radius: 100px;
+    font-size: 0.75rem; font-weight: 500; letter-spacing: 0.08em;
+    text-transform: uppercase; margin-bottom: 1.5rem;
+    animation: fadeUp 0.9s 0.1s ease both;
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 5vw, 4.5rem);
+    line-height: 1.08;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.9s 0.2s ease both;
+  }
+  .hero-title em { font-style: italic; color: var(--saffron); }
+  .hero-title .line2 { color: var(--emerald); }
+
+  .hero-sub {
+    font-size: 1.05rem; color: var(--ink-mid); line-height: 1.7;
+    max-width: 480px; margin-bottom: 2.5rem;
+    animation: fadeUp 0.9s 0.3s ease both;
+  }
+
+  .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; animation: fadeUp 0.9s 0.4s ease both; }
+  .btn-primary {
+    background: var(--saffron); color: white;
+    padding: 14px 28px; border-radius: 100px; border: none;
+    font-size: 0.95rem; font-weight: 500; cursor: pointer;
+    display: flex; align-items: center; gap: 8px;
+    transition: all 0.25s; text-decoration: none;
+  }
+  .btn-primary:hover { background: var(--terracotta); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,98,26,0.35); }
+  .btn-outline {
+    background: transparent; color: var(--ink);
+    padding: 14px 28px; border-radius: 100px;
+    border: 1.5px solid rgba(26,18,9,0.25);
+    font-size: 0.95rem; font-weight: 500; cursor: pointer;
+    display: flex; align-items: center; gap: 8px;
+    transition: all 0.25s; text-decoration: none;
+  }
+  .btn-outline:hover { border-color: var(--saffron); color: var(--saffron); transform: translateY(-2px); }
+
+  .hero-stats {
+    display: flex; gap: 2.5rem; margin-top: 3.5rem;
+    animation: fadeUp 0.9s 0.5s ease both;
+  }
+  .stat-item { text-align: left; }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem; font-weight: 900; color: var(--saffron);
+    line-height: 1;
+  }
+  .stat-label { font-size: 0.78rem; color: var(--muted); letter-spacing: 0.04em; margin-top: 4px; }
+
+  /* Hero Visual Grid */
+  .hero-visual {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    padding: 20px; position: relative; z-index: 2;
+    animation: fadeUp 0.9s 0.3s ease both;
+  }
+  .hero-img-card {
+    border-radius: var(--radius);
+    overflow: hidden; position: relative;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    transition: transform 0.3s;
+    cursor: pointer;
+  }
+  .hero-img-card:hover { transform: scale(1.02); }
+  .hero-img-card.tall { grid-row: span 2; }
+  .hero-img-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .hero-img-card .card-img-placeholder {
+    width: 100%; height: 100%; min-height: 180px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.5rem; position: relative;
+  }
+  .hero-img-card .card-label {
+    position: absolute; bottom: 10px; left: 10px;
+    background: rgba(0,0,0,0.55); color: white;
+    padding: 4px 10px; border-radius: 6px;
+    font-size: 0.7rem; font-weight: 500; letter-spacing: 0.04em;
+    backdrop-filter: blur(4px);
+  }
+
+  /* Place gradient images */
+  .place-taj { background: linear-gradient(135deg, #C8A882 0%, #9E7A5A 100%); }
+  .place-kerala { background: linear-gradient(135deg, #2E7D52 0%, #5BA680 100%); }
+  .place-rajasthan { background: linear-gradient(135deg, #D4722A 0%, #E8A060 100%); }
+  .place-varanasi { background: linear-gradient(135deg, #8B5A2B 0%, #C4874A 100%); }
+
+  /* ── SEARCH BAR ── */
+  .search-section {
+    padding: 0 5vw;
+    margin-top: -28px;
+    position: relative; z-index: 10;
+  }
+  .search-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 12px 48px rgba(26,18,9,0.12);
+    padding: 28px 32px;
+    display: flex; gap: 16px; align-items: flex-end;
+    flex-wrap: wrap;
+  }
+  .search-field { flex: 1; min-width: 180px; }
+  .search-field label {
+    display: block; font-size: 0.7rem; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 8px;
+  }
+  .search-field input, .search-field select {
+    width: 100%; padding: 12px 16px;
+    border: 1.5px solid #EEE8DC;
+    border-radius: 10px; font-size: 0.9rem;
+    color: var(--ink); background: var(--sand-light);
+    transition: border-color 0.2s;
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+  }
+  .search-field input::placeholder { color: #B8A898; }
+  .search-field input:focus, .search-field select:focus { border-color: var(--saffron); background: white; }
+  .search-btn {
+    background: var(--saffron); color: white;
+    padding: 12px 28px; border-radius: 10px;
+    border: none; font-size: 0.9rem; font-weight: 600;
+    cursor: pointer; white-space: nowrap;
+    transition: all 0.2s; display: flex; align-items: center; gap: 8px;
+  }
+  .search-btn:hover { background: var(--terracotta); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(232,98,26,0.3); }
+
+  /* ── SECTION COMMONS ── */
+  section { padding: 80px 5vw; }
+  .section-header { text-align: center; margin-bottom: 3rem; }
+  .section-eyebrow {
+    display: inline-block; font-size: 0.72rem; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--saffron); margin-bottom: 0.75rem;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    font-weight: 800; line-height: 1.15; color: var(--ink);
+  }
+  .section-title em { color: var(--saffron); font-style: italic; }
+  .section-sub { font-size: 1rem; color: var(--muted); margin-top: 0.75rem; max-width: 560px; margin-left: auto; margin-right: auto; }
+
+  /* ── CATEGORY PILLS ── */
+  .categories-section { padding: 48px 5vw; background: var(--sand-light); }
+  .categories-scroll {
+    display: flex; gap: 12px; overflow-x: auto;
+    scrollbar-width: none; padding-bottom: 4px;
+    scroll-padding: 12px;
+  }
+  .categories-scroll::-webkit-scrollbar { display: none; }
+  .cat-pill {
+    flex-shrink: 0; display: flex; align-items: center; gap: 10px;
+    padding: 12px 22px; border-radius: 100px;
+    border: 1.5px solid var(--border);
+    background: white; cursor: pointer;
+    font-size: 0.875rem; font-weight: 500; color: var(--ink-mid);
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .cat-pill.active, .cat-pill:hover {
+    background: var(--saffron); color: white;
+    border-color: var(--saffron);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(232,98,26,0.25);
+  }
+  .cat-icon { font-size: 1.1rem; }
+
+  /* ── STATES GRID ── */
+  .states-section { background: white; }
+  .states-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+  }
+  .state-card {
+    background: var(--sand-light);
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    cursor: pointer; transition: all 0.3s;
+    position: relative;
+  }
+  .state-card:hover { transform: translateY(-6px); box-shadow: 0 20px 48px rgba(26,18,9,0.1); }
+  .state-card-img {
+    height: 160px; display: flex;
+    align-items: center; justify-content: center;
+    font-size: 3rem; position: relative;
+    overflow: hidden;
+  }
+  .state-card-img::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.25) 100%);
+  }
+  .state-card-body { padding: 16px; }
+  .state-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem; font-weight: 700; color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .state-meta { font-size: 0.78rem; color: var(--muted); }
+  .state-count {
+    position: absolute; top: 12px; right: 12px;
+    background: white; color: var(--saffron);
+    padding: 3px 10px; border-radius: 100px;
+    font-size: 0.72rem; font-weight: 600;
+    z-index: 1;
+  }
+  /* State color themes */
+  .s-rajasthan { background: linear-gradient(135deg, #D4722A, #F0A060); }
+  .s-kerala { background: linear-gradient(135deg, #1E6B44, #4AAE78); }
+  .s-up { background: linear-gradient(135deg, #8B5A2B, #C4874A); }
+  .s-goa { background: linear-gradient(135deg, #2780B9, #5AAAD8); }
+  .s-hp { background: linear-gradient(135deg, #4A7AB5, #80AADA); }
+  .s-tn { background: linear-gradient(135deg, #B8272D, #E05A60); }
+  .s-mp { background: linear-gradient(135deg, #477A3C, #72B266); }
+  .s-maha { background: linear-gradient(135deg, #9B4D26, #CC7A50); }
+
+  /* ── FEATURED DESTINATIONS ── */
+  .featured-section { background: var(--sand-light); }
+  .featured-grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 20px;
+  }
+  .dest-card {
+    border-radius: 16px; overflow: hidden;
+    position: relative; cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+  .dest-card:hover { transform: scale(1.02); box-shadow: 0 16px 48px rgba(0,0,0,0.14); }
+  .dest-card.hero-dest { grid-row: span 2; min-height: 480px; }
+  .dest-card-bg {
+    width: 100%; height: 100%; min-height: 220px;
+    display: flex; align-items: flex-end;
+    padding: 24px;
+    position: relative;
+  }
+  .dest-card-bg::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 60%, transparent 100%);
+  }
+  .dest-card-info { position: relative; z-index: 1; color: white; }
+  .dest-category-tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 3px 10px; border-radius: 100px;
+    font-size: 0.68rem; font-weight: 600; letter-spacing: 0.06em;
+    text-transform: uppercase; margin-bottom: 8px;
+  }
+  .dest-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem; font-weight: 700; line-height: 1.2; margin-bottom: 6px;
+  }
+  .dest-card.hero-dest .dest-name { font-size: 2.2rem; }
+  .dest-state { font-size: 0.8rem; opacity: 0.85; display: flex; align-items: center; gap: 5px; }
+  .dest-rating {
+    margin-top: 8px; display: flex; align-items: center; gap: 4px;
+    font-size: 0.82rem; font-weight: 500;
+  }
+  .stars { color: var(--gold-light); }
+
+  /* BG gradients for destinations */
+  .bg-taj { background: linear-gradient(170deg, #B8997A 0%, #7D5C3A 100%); }
+  .bg-kerala { background: linear-gradient(170deg, #2D6B4A 0%, #1A4530 100%); }
+  .bg-varanasi { background: linear-gradient(170deg, #C46B1E 0%, #8B3A0E 100%); }
+  .bg-hampi { background: linear-gradient(170deg, #9B5E30 0%, #6B3A1A 100%); }
+  .bg-ladakh { background: linear-gradient(170deg, #6E8FB5 0%, #3A5678 100%); }
+  .bg-jaipur { background: linear-gradient(170deg, #D4812A 0%, #A05210 100%); }
+  .bg-goa { background: linear-gradient(170deg, #278BAA 0%, #145A70 100%); }
+
+  /* Decorative emoji overlay */
+  .dest-card-bg .deco {
+    position: absolute; top: 20px; right: 20px;
+    font-size: 2.5rem; z-index: 1; opacity: 0.8;
+  }
+
+  /* ── DETAIL MODAL ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 1000;
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(6px);
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-overlay.open { display: flex; animation: fadeIn 0.3s; }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+  .modal {
+    background: var(--white); border-radius: 20px;
+    max-width: 800px; width: 100%; max-height: 90vh;
+    overflow-y: auto; position: relative;
+    animation: slideUp 0.35s ease;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.2);
+  }
+  @keyframes slideUp { from{transform:translateY(40px);opacity:0} to{transform:translateY(0);opacity:1} }
+
+  .modal-hero {
+    height: 280px; position: relative; border-radius: 20px 20px 0 0; overflow: hidden;
+  }
+  .modal-close {
+    position: absolute; top: 16px; right: 16px; z-index: 10;
+    background: rgba(0,0,0,0.4); color: white; border: none;
+    width: 36px; height: 36px; border-radius: 50%;
+    font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px); transition: background 0.2s;
+  }
+  .modal-close:hover { background: var(--saffron); }
+
+  .modal-body { padding: 32px; }
+  .modal-tag {
+    display: inline-block; background: var(--saffron-pale);
+    color: var(--saffron); padding: 4px 12px; border-radius: 100px;
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  .modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem; font-weight: 800; margin-bottom: 8px;
+  }
+  .modal-location { font-size: 0.9rem; color: var(--muted); margin-bottom: 20px; display: flex; align-items: center; gap: 6px; }
+  .modal-desc { font-size: 0.95rem; line-height: 1.75; color: var(--ink-mid); margin-bottom: 24px; }
+
+  .modal-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;
+  }
+  .modal-info-item {
+    background: var(--sand-light); border-radius: 10px; padding: 16px;
+    border: 1px solid var(--border);
+  }
+  .modal-info-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .modal-info-val { font-size: 0.9rem; color: var(--ink); font-weight: 500; }
+
+  .modal-nearby h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem; margin-bottom: 12px;
+  }
+  .nearby-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .nearby-tag {
+    background: white; border: 1.5px solid var(--border);
+    padding: 6px 14px; border-radius: 100px;
+    font-size: 0.82rem; color: var(--ink-mid); cursor: pointer;
+    transition: all 0.2s;
+  }
+  .nearby-tag:hover { background: var(--saffron-pale); border-color: var(--saffron); color: var(--saffron); }
+
+  .modal-gallery { margin-top: 24px; }
+  .modal-gallery h4 { font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 12px; }
+  .gallery-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .gallery-thumb {
+    border-radius: 8px; overflow: hidden;
+    height: 80px; cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .gallery-thumb:hover { transform: scale(1.05); }
+  .gallery-thumb div {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+  }
+
+  /* ── ADMIN PANEL ── */
+  .admin-section {
+    background: var(--ink);
+    padding: 80px 5vw;
+    position: relative; overflow: hidden;
+  }
+  .admin-bg-circle {
+    position: absolute; width: 600px; height: 600px;
+    border-radius: 50%; background: var(--saffron);
+    opacity: 0.04; top: -200px; right: -200px;
+    pointer-events: none;
+  }
+
+  .admin-container {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+  }
+  .admin-content { color: white; }
+  .admin-eyebrow {
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 1rem;
+  }
+  .admin-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 3vw, 2.8rem); font-weight: 800;
+    line-height: 1.2; margin-bottom: 1.25rem;
+    color: white;
+  }
+  .admin-title em { color: var(--gold-light); font-style: italic; }
+  .admin-desc { color: rgba(255,255,255,0.65); line-height: 1.7; margin-bottom: 2rem; }
+
+  .admin-features { display: flex; flex-direction: column; gap: 14px; margin-bottom: 2.5rem; }
+  .admin-feature { display: flex; align-items: center; gap: 12px; }
+  .admin-feature-icon {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: rgba(212,160,23,0.15); display: flex; align-items: center;
+    justify-content: center; font-size: 1rem; flex-shrink: 0;
+  }
+  .admin-feature-text { font-size: 0.9rem; color: rgba(255,255,255,0.8); }
+
+  /* Admin Mock UI */
+  .admin-ui-mock {
+    background: #252015; border-radius: 16px; overflow: hidden;
+    border: 1px solid rgba(212,160,23,0.2);
+    box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+  }
+  .admin-ui-topbar {
+    background: #1A160E; padding: 14px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .admin-ui-topbar .logo {
+    font-family: 'Yatra One', cursive; color: var(--gold);
+    font-size: 1rem;
+  }
+  .admin-ui-topbar .dots { display: flex; gap: 6px; }
+  .admin-ui-topbar .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  .admin-ui-body { display: grid; grid-template-columns: 160px 1fr; min-height: 300px; }
+  .admin-sidebar {
+    background: #1E1A11; padding: 16px 0;
+    border-right: 1px solid rgba(255,255,255,0.06);
+  }
+  .admin-nav-item {
+    padding: 10px 16px; font-size: 0.75rem; color: rgba(255,255,255,0.45);
+    cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px;
+  }
+  .admin-nav-item.active { color: var(--gold); background: rgba(212,160,23,0.1); border-right: 2px solid var(--gold); }
+
+  .admin-content-area { padding: 20px; }
+  .admin-content-area h3 {
+    font-family: 'Playfair Display', serif; color: white;
+    font-size: 1rem; margin-bottom: 16px;
+  }
+  .admin-table { width: 100%; border-collapse: collapse; }
+  .admin-table th {
+    font-size: 0.65rem; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: rgba(255,255,255,0.4);
+    padding: 8px 0; text-align: left;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .admin-table td { padding: 10px 0; font-size: 0.75rem; color: rgba(255,255,255,0.7); border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .admin-badge { padding: 2px 8px; border-radius: 100px; font-size: 0.65rem; font-weight: 600; }
+  .badge-active { background: rgba(46,158,107,0.2); color: #2E9E6B; }
+  .badge-review { background: rgba(212,160,23,0.2); color: var(--gold); }
+
+  .admin-add-btn {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--saffron); color: white;
+    border: none; padding: 8px 14px; border-radius: 8px;
+    font-size: 0.75rem; cursor: pointer; font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s;
+    margin-bottom: 16px;
+  }
+  .admin-add-btn:hover { background: var(--terracotta); }
+
+  /* ── TESTIMONIALS / HIGHLIGHTS ── */
+  .highlights-section { padding: 80px 5vw; background: white; }
+  .highlights-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .highlight-card {
+    background: var(--sand-light); border-radius: 16px; padding: 28px;
+    border: 1px solid var(--border); transition: transform 0.3s;
+  }
+  .highlight-card:hover { transform: translateY(-4px); }
+  .highlight-icon { font-size: 2rem; margin-bottom: 16px; }
+  .highlight-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; }
+  .highlight-text { font-size: 0.875rem; color: var(--muted); line-height: 1.7; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--ink); color: white; padding: 60px 5vw 32px;
+    border-top: 1px solid rgba(212,160,23,0.15);
+  }
+  .footer-grid { display: grid; grid-template-columns: 2fr repeat(3, 1fr); gap: 40px; margin-bottom: 48px; }
+  .footer-brand .logo {
+    font-family: 'Yatra One', cursive; font-size: 1.4rem;
+    color: var(--gold); margin-bottom: 12px; display: block;
+  }
+  .footer-brand p { font-size: 0.85rem; color: rgba(255,255,255,0.5); line-height: 1.7; max-width: 260px; }
+  .footer-col h4 {
+    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 16px;
+  }
+  .footer-col a {
+    display: block; color: rgba(255,255,255,0.5); text-decoration: none;
+    font-size: 0.875rem; margin-bottom: 10px; transition: color 0.2s;
+  }
+  .footer-col a:hover { color: white; }
+  .footer-bottom {
+    padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.08);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.78rem; color: rgba(255,255,255,0.35);
+    flex-wrap: wrap; gap: 8px;
+  }
+  .footer-bottom a { color: var(--gold); text-decoration: none; }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+    nav { padding: 0 4vw; }
+    .nav-links { display: none; }
+    .mobile-menu-btn { display: flex; }
+    .nav-links.open {
+      display: flex; flex-direction: column;
+      position: fixed; top: 68px; left: 0; right: 0;
+      background: var(--white); padding: 20px 5vw;
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    }
+    .hero { grid-template-columns: 1fr; padding: 100px 5vw 60px; gap: 40px; }
+    .hero-visual { order: -1; }
+    .hero-stats { gap: 1.5rem; }
+    .search-card { flex-direction: column; }
+    .featured-grid { grid-template-columns: 1fr; }
+    .dest-card.hero-dest { min-height: 320px; }
+    .admin-container { grid-template-columns: 1fr; }
+    .modal-grid { grid-template-columns: 1fr 1fr; }
+    .highlights-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 480px) {
+    .states-grid { grid-template-columns: repeat(2, 1fr); }
+    .hero-stats { flex-wrap: wrap; }
+    .modal-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav id="mainNav">
+  <a href="#" class="nav-logo">
+    <span>Travel</span>Bharat
+    <div class="nav-logo-dot"></div>
+  </a>
+  <div class="nav-links" id="navLinks">
+    <a href="#states">States</a>
+    <a href="#destinations">Destinations</a>
+    <a href="#categories">Categories</a>
+    <a href="#admin">Admin</a>
+    <button class="nav-search-btn" onclick="document.getElementById('searchInput').focus()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      Search
+    </button>
+  </div>
+  <div class="mobile-menu-btn" onclick="toggleMenu()" id="menuBtn">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-pattern"></div>
+  <!-- Mandala SVG -->
+  <svg class="hero-mandala" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="200" cy="200" r="190" stroke="#E8621A" stroke-width="1"/>
+    <circle cx="200" cy="200" r="150" stroke="#D4A017" stroke-width="1"/>
+    <circle cx="200" cy="200" r="110" stroke="#E8621A" stroke-width="1"/>
+    <circle cx="200" cy="200" r="70" stroke="#D4A017" stroke-width="1"/>
+    <circle cx="200" cy="200" r="30" fill="#E8621A"/>
+    <g stroke="#E8621A" stroke-width="1">
+      <line x1="200" y1="10" x2="200" y2="390"/>
+      <line x1="10" y1="200" x2="390" y2="200"/>
+      <line x1="59" y1="59" x2="341" y2="341"/>
+      <line x1="341" y1="59" x2="59" y2="341"/>
+      <line x1="30" y1="130" x2="370" y2="270"/>
+      <line x1="30" y1="270" x2="370" y2="130"/>
+      <line x1="130" y1="30" x2="270" y2="370"/>
+      <line x1="270" y1="30" x2="130" y2="370"/>
+    </g>
+  </svg>
+
+  <div class="hero-content">
+    <div class="hero-badge">✦ India's Premier Travel Directory</div>
+    <h1 class="hero-title">
+      Explore the <em>Soul</em><br>
+      <span class="line2">of Bharat</span>
+    </h1>
+    <p class="hero-sub">Discover 500+ breathtaking destinations across India's 28 states and 8 union territories. From ancient temples to Himalayan peaks, coastal paradises to desert wonders.</p>
+    <div class="hero-actions">
+      <a href="#destinations" class="btn-primary">
+        Start Exploring
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="#states" class="btn-outline">
+        Browse by State
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">500+</div>
+        <div class="stat-label">Destinations</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">36</div>
+        <div class="stat-label">States & UTs</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">12</div>
+        <div class="stat-label">Categories</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="hero-img-card tall" onclick="openModal('taj')">
+      <div class="card-img-placeholder place-taj">🕌</div>
+      <div class="card-label">Taj Mahal · UP</div>
+    </div>
+    <div class="hero-img-card" onclick="openModal('kerala')">
+      <div class="card-img-placeholder place-kerala">🌴</div>
+      <div class="card-label">Kerala Backwaters</div>
+    </div>
+    <div class="hero-img-card" onclick="openModal('jaipur')">
+      <div class="card-img-placeholder place-rajasthan">🏰</div>
+      <div class="card-label">Jaipur · Rajasthan</div>
+    </div>
+  </div>
+</section>
+
+<!-- SEARCH -->
+<div class="search-section">
+  <div class="search-card">
+    <div class="search-field" style="flex:2">
+      <label>Search Place</label>
+      <input type="text" id="searchInput" placeholder="e.g. Taj Mahal, Goa beaches, Khajuraho…" oninput="filterDestinations()" />
+    </div>
+    <div class="search-field">
+      <label>State</label>
+      <select id="stateFilter" onchange="filterDestinations()">
+        <option value="">All States</option>
+        <option>Rajasthan</option>
+        <option>Kerala</option>
+        <option>Uttar Pradesh</option>
+        <option>Goa</option>
+        <option>Himachal Pradesh</option>
+        <option>Tamil Nadu</option>
+        <option>Madhya Pradesh</option>
+        <option>Maharashtra</option>
+        <option>Jammu & Kashmir</option>
+        <option>Karnataka</option>
+      </select>
+    </div>
+    <div class="search-field">
+      <label>Category</label>
+      <select id="categoryFilter" onchange="filterDestinations()">
+        <option value="">All Categories</option>
+        <option>Heritage</option>
+        <option>Nature</option>
+        <option>Religious</option>
+        <option>Adventure</option>
+        <option>Beach</option>
+        <option>Wildlife</option>
+      </select>
+    </div>
+    <button class="search-btn" onclick="filterDestinations()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      Find Places
+    </button>
+  </div>
+</div>
+
+<!-- CATEGORIES -->
+<section class="categories-section" id="categories">
+  <div class="categories-scroll">
+    <div class="cat-pill active" onclick="setCategory(this,'')"><span class="cat-icon">🗺️</span> All Destinations</div>
+    <div class="cat-pill" onclick="setCategory(this,'Heritage')"><span class="cat-icon">🏛️</span> Heritage</div>
+    <div class="cat-pill" onclick="setCategory(this,'Nature')"><span class="cat-icon">🌿</span> Nature</div>
+    <div class="cat-pill" onclick="setCategory(this,'Religious')"><span class="cat-icon">🕌</span> Religious</div>
+    <div class="cat-pill" onclick="setCategory(this,'Adventure')"><span class="cat-icon">⛰️</span> Adventure</div>
+    <div class="cat-pill" onclick="setCategory(this,'Beach')"><span class="cat-icon">🏖️</span> Beaches</div>
+    <div class="cat-pill" onclick="setCategory(this,'Wildlife')"><span class="cat-icon">🐘</span> Wildlife</div>
+    <div class="cat-pill" onclick="setCategory(this,'Pilgrimage')"><span class="cat-icon">🙏</span> Pilgrimage</div>
+    <div class="cat-pill" onclick="setCategory(this,'Forts')"><span class="cat-icon">🏰</span> Forts & Palaces</div>
+    <div class="cat-pill" onclick="setCategory(this,'Hill Station')"><span class="cat-icon">🏔️</span> Hill Stations</div>
+    <div class="cat-pill" onclick="setCategory(this,'Desert')"><span class="cat-icon">🏜️</span> Desert</div>
+    <div class="cat-pill" onclick="setCategory(this,'Caves')"><span class="cat-icon">🪨</span> Caves & Rocks</div>
+  </div>
+</section>
+
+<!-- STATES GRID -->
+<section class="states-section" id="states">
+  <div class="section-header">
+    <div class="section-eyebrow">✦ Browse by Region</div>
+    <h2 class="section-title">Explore by <em>State</em></h2>
+    <p class="section-sub">India's diverse states offer an unparalleled range of landscapes, cultures, and experiences.</p>
+  </div>
+  <div class="states-grid" id="statesGrid">
+    <div class="state-card" onclick="filterByState('Rajasthan')">
+      <div class="state-count">42 Places</div>
+      <div class="state-card-img s-rajasthan">🏰</div>
+      <div class="state-card-body">
+        <div class="state-name">Rajasthan</div>
+        <div class="state-meta">Land of Kings & Forts</div>
+      </div>
+    </div>
+    <div class="state-card" onclick="filterByState('Kerala')">
+      <div class="state-count">36 Places</div>
+      <div class="state-card-img s-kerala">🌴</div>
+      <div class="state-card-body">
+        <div class="state-name">Kerala</div>
+        <div class="state-meta">God's Own Country</div>
+      </div>
+    </div>
+    <div class="state-card" onclick="filterByState('Uttar Pradesh')">
+      <div class="state-count">55 Places</div>
+      <div class="state-card-img s-up">🕌</div>
+      <div class="state-card-body">
+        <div class="state-name">Uttar Pradesh</div>
+        <div class="state-meta">Heart of Culture & Heritage</div>
+      </div>
+    </div>
+    <div class="state-card" onclick="filterByState('Goa')">
+      <div class="state-count">18 Places</div>
+      <div class="state-card-img s-goa">🏖️</div>
+      <div class="state-card-body">
+        <div class="state-name">Goa</div>
+        <div class="state-meta">Beaches & Portuguese Heritage</div>
+      </div>
+    </div>
+    <div class="state-card" onclick="filterByState('Himachal Pradesh')">
+      <div class="state-count">29 Places</div>
+      <div class="state-card-img s-hp">🏔️</div>
+      <div class="state-card-body">
+        <div class="state-name">Himachal Pradesh</div>
+        <div class="state-meta">Himalayan Splendour</div>
+      </div>
+    </div>
+    <div class="state-card" onclick="filterByState('Tamil Nadu')">
+      <div class="state-count">48 Places</div>
+      <div class="state-card-img s-tn">🛕</div>
+      <div class="state-card-body">
+        <div class="state-name">Tamil Nadu</div>
+        <div class="state-meta">Temple Architecture & Culture</div>
+      </div>
+    </div>
+    <div class="state-card" onclick="filterByState('Madhya Pradesh')">
+      <div class="state-count">33 Places</div>
+      <div class="state-card-img s-mp">🌿</div>
+      <div class="state-card-body">
+        <div class="state-name">Madhya Pradesh</div>
+        <div class="state-meta">Heart of India's Wilderness</div>
+      </div>
+    </div>
+    <div class="state-card" onclick="filterByState('Maharashtra')">
+      <div class="state-count">41 Places</div>
+      <div class="state-card-img s-maha">🗻</div>
+      <div class="state-card-body">
+        <div class="state-name">Maharashtra</div>
+        <div class="state-meta">Forts, Caves & Coastline</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED DESTINATIONS -->
+<section class="featured-section" id="destinations">
+  <div class="section-header">
+    <div class="section-eyebrow">✦ Editor's Picks</div>
+    <h2 class="section-title">Must-Visit <em>Destinations</em></h2>
+    <p class="section-sub">Curated highlights from India's most extraordinary travel experiences.</p>
+  </div>
+  <div class="featured-grid" id="destGrid">
+    <div class="dest-card hero-dest" onclick="openModal('taj')">
+      <div class="dest-card-bg bg-taj" style="min-height:480px">
+        <div class="deco">🕌</div>
+        <div class="dest-card-info">
+          <div class="dest-category-tag">Heritage · UNESCO</div>
+          <div class="dest-name">Taj Mahal</div>
+          <div class="dest-state">📍 Agra, Uttar Pradesh</div>
+          <div class="dest-rating"><span class="stars">★★★★★</span> 4.9 · Wonder of the World</div>
+        </div>
+      </div>
+    </div>
+    <div class="dest-card" onclick="openModal('kerala')">
+      <div class="dest-card-bg bg-kerala">
+        <div class="deco">🌴</div>
+        <div class="dest-card-info">
+          <div class="dest-category-tag">Nature · Backwaters</div>
+          <div class="dest-name">Kerala Backwaters</div>
+          <div class="dest-state">📍 Alleppey, Kerala</div>
+          <div class="dest-rating"><span class="stars">★★★★★</span> 4.8</div>
+        </div>
+      </div>
+    </div>
+    <div class="dest-card" onclick="openModal('varanasi')">
+      <div class="dest-card-bg bg-varanasi">
+        <div class="deco">🪔</div>
+        <div class="dest-card-info">
+          <div class="dest-category-tag">Religious · Ghats</div>
+          <div class="dest-name">Varanasi Ghats</div>
+          <div class="dest-state">📍 Varanasi, Uttar Pradesh</div>
+          <div class="dest-rating"><span class="stars">★★★★☆</span> 4.7</div>
+        </div>
+      </div>
+    </div>
+    <div class="dest-card" onclick="openModal('ladakh')">
+      <div class="dest-card-bg bg-ladakh">
+        <div class="deco">⛰️</div>
+        <div class="dest-card-info">
+          <div class="dest-category-tag">Adventure · Himalayas</div>
+          <div class="dest-name">Ladakh</div>
+          <div class="dest-state">📍 Leh, J&K</div>
+          <div class="dest-rating"><span class="stars">★★★★★</span> 4.9</div>
+        </div>
+      </div>
+    </div>
+    <div class="dest-card" onclick="openModal('hampi')">
+      <div class="dest-card-bg bg-hampi">
+        <div class="deco">🏛️</div>
+        <div class="dest-card-info">
+          <div class="dest-category-tag">Heritage · Ruins</div>
+          <div class="dest-name">Hampi</div>
+          <div class="dest-state">📍 Karnataka</div>
+          <div class="dest-rating"><span class="stars">★★★★★</span> 4.8</div>
+        </div>
+      </div>
+    </div>
+    <div class="dest-card" onclick="openModal('jaipur')">
+      <div class="dest-card-bg bg-jaipur">
+        <div class="deco">🏰</div>
+        <div class="dest-card-info">
+          <div class="dest-category-tag">Heritage · Pink City</div>
+          <div class="dest-name">Jaipur</div>
+          <div class="dest-state">📍 Rajasthan</div>
+          <div class="dest-rating"><span class="stars">★★★★☆</span> 4.6</div>
+        </div>
+      </div>
+    </div>
+    <div class="dest-card" onclick="openModal('goa')">
+      <div class="dest-card-bg bg-goa">
+        <div class="deco">🏖️</div>
+        <div class="dest-card-info">
+          <div class="dest-category-tag">Beach · Coastal</div>
+          <div class="dest-name">Goa Beaches</div>
+          <div class="dest-state">📍 North Goa</div>
+          <div class="dest-rating"><span class="stars">★★★★☆</span> 4.5</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HIGHLIGHTS -->
+<section class="highlights-section">
+  <div class="section-header">
+    <div class="section-eyebrow">✦ Why TravelBharat</div>
+    <h2 class="section-title">Your Complete <em>Travel Guide</em></h2>
+  </div>
+  <div class="highlights-grid">
+    <div class="highlight-card">
+      <div class="highlight-icon">🗺️</div>
+      <div class="highlight-title">State-Wise Discovery</div>
+      <div class="highlight-text">Browse all 36 states and union territories. Filter destinations by region, category, and best time to visit for a perfectly planned trip.</div>
+    </div>
+    <div class="highlight-card">
+      <div class="highlight-icon">📖</div>
+      <div class="highlight-title">Rich Destination Pages</div>
+      <div class="highlight-text">Each destination features historical significance, practical details like entry fees and timings, best seasons, and nearby attractions.</div>
+    </div>
+    <div class="highlight-card">
+      <div class="highlight-icon">📸</div>
+      <div class="highlight-title">Visual Galleries</div>
+      <div class="highlight-text">Explore stunning image galleries for every destination. Visually discover the beauty of India before you pack your bags.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ADMIN SECTION -->
+<section class="admin-section" id="admin">
+  <div class="admin-bg-circle"></div>
+  <div class="admin-container">
+    <div class="admin-content">
+      <div class="admin-eyebrow">✦ Content Management</div>
+      <h2 class="admin-title">Powerful <em>Admin</em><br>Panel Built In</h2>
+      <p class="admin-desc">A secure, intuitive dashboard for managing all destination content — add new places, update details, upload images, and moderate listings with ease.</p>
+      <div class="admin-features">
+        <div class="admin-feature">
+          <div class="admin-feature-icon">➕</div>
+          <div class="admin-feature-text">Add and publish new tourist destinations with rich details</div>
+        </div>
+        <div class="admin-feature">
+          <div class="admin-feature-icon">✏️</div>
+          <div class="admin-feature-text">Edit existing listings — descriptions, fees, timings, images</div>
+        </div>
+        <div class="admin-feature">
+          <div class="admin-feature-icon">✅</div>
+          <div class="admin-feature-text">Review and verify content before publishing to live site</div>
+        </div>
+        <div class="admin-feature">
+          <div class="admin-feature-icon">🔒</div>
+          <div class="admin-feature-text">Secure role-based access with admin authentication</div>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="document.querySelector('.admin-ui-mock').scrollIntoView({behavior:'smooth'})">
+        View Admin Preview
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+
+    <div class="admin-ui-mock">
+      <div class="admin-ui-topbar">
+        <span class="logo">TravelBharat Admin</span>
+        <div class="dots">
+          <div class="dot" style="background:#FF5F57"></div>
+          <div class="dot" style="background:#FFBD2E"></div>
+          <div class="dot" style="background:#28C840"></div>
+        </div>
+      </div>
+      <div class="admin-ui-body">
+        <div class="admin-sidebar">
+          <div class="admin-nav-item active">🗺️ Destinations</div>
+          <div class="admin-nav-item">🏛️ States</div>
+          <div class="admin-nav-item">🏷️ Categories</div>
+          <div class="admin-nav-item">📸 Gallery</div>
+          <div class="admin-nav-item">⚙️ Settings</div>
+        </div>
+        <div class="admin-content-area">
+          <h3>Manage Destinations</h3>
+          <button class="admin-add-btn">+ Add Destination</button>
+          <table class="admin-table">
+            <tr>
+              <th>Place</th>
+              <th>State</th>
+              <th>Status</th>
+            </tr>
+            <tr>
+              <td>Taj Mahal</td>
+              <td>Uttar Pradesh</td>
+              <td><span class="admin-badge badge-active">Live</span></td>
+            </tr>
+            <tr>
+              <td>Kerala Backwaters</td>
+              <td>Kerala</td>
+              <td><span class="admin-badge badge-active">Live</span></td>
+            </tr>
+            <tr>
+              <td>Spiti Valley</td>
+              <td>Himachal Pradesh</td>
+              <td><span class="admin-badge badge-review">Review</span></td>
+            </tr>
+            <tr>
+              <td>Sundarbans</td>
+              <td>West Bengal</td>
+              <td><span class="admin-badge badge-review">Review</span></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <span class="logo">TravelBharat</span>
+      <p>India's most comprehensive tourist destination directory. Discover the beauty, culture, and history of Incredible India — one destination at a time.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Explore</h4>
+      <a href="#">All Destinations</a>
+      <a href="#">States & UTs</a>
+      <a href="#">Heritage Sites</a>
+      <a href="#">National Parks</a>
+    </div>
+    <div class="footer-col">
+      <h4>Categories</h4>
+      <a href="#">Nature & Hills</a>
+      <a href="#">Beaches</a>
+      <a href="#">Temples</a>
+      <a href="#">Adventure</a>
+    </div>
+    <div class="footer-col">
+      <h4>Admin</h4>
+      <a href="#">Login</a>
+      <a href="#">Add Destination</a>
+      <a href="#">Manage Content</a>
+      <a href="#">Documentation</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 TravelBharat. Built with ❤️ for Incredible India.</span>
+    <span><a href="#">Privacy Policy</a> · <a href="#">Terms</a> · <a href="#">Contact</a></span>
+  </div>
+</footer>
+
+<!-- DESTINATION MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOnBg(event)">
+  <div class="modal" id="modal">
+    <div class="modal-hero" id="modalHero">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-tag" id="modalTag">Heritage</div>
+      <h2 class="modal-title" id="modalTitle">Taj Mahal</h2>
+      <div class="modal-location" id="modalLocation">📍 Agra, Uttar Pradesh</div>
+      <p class="modal-desc" id="modalDesc">Loading...</p>
+      <div class="modal-grid">
+        <div class="modal-info-item">
+          <div class="modal-info-label">Best Time to Visit</div>
+          <div class="modal-info-val" id="modalBestTime">Oct – March</div>
+        </div>
+        <div class="modal-info-item">
+          <div class="modal-info-label">Entry Fee</div>
+          <div class="modal-info-val" id="modalFee">₹50 (Indian) / ₹1100 (Foreign)</div>
+        </div>
+        <div class="modal-info-item">
+          <div class="modal-info-label">Timings</div>
+          <div class="modal-info-val" id="modalTimings">Sunrise – Sunset</div>
+        </div>
+      </div>
+      <div class="modal-nearby">
+        <h4>Nearby Attractions</h4>
+        <div class="nearby-tags" id="modalNearby"></div>
+      </div>
+      <div class="modal-gallery">
+        <h4>Gallery</h4>
+        <div class="gallery-grid" id="modalGallery"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const destinations = {
+  taj: {
+    title: "Taj Mahal",
+    tag: "Heritage · UNESCO World Heritage",
+    location: "📍 Agra, Uttar Pradesh",
+    desc: "A breathtaking monument of eternal love, the Taj Mahal was built by Mughal Emperor Shah Jahan in memory of his beloved wife Mumtaz Mahal between 1632 and 1653. This ivory-white marble mausoleum stands as one of the finest examples of Mughal architecture — a seamless blend of Persian, Ottoman Turkish, and Indian styles. Recognised as a UNESCO World Heritage Site and one of the New Seven Wonders of the World, it draws over 7 million visitors annually. The perfectly symmetrical gardens, the reflecting pool that mirrors the dome, and the intricate inlay work using 28 types of precious and semi-precious stones make every visit an unforgettable experience.",
+    bestTime: "October – March",
+    fee: "₹50 (Indian) / ₹1,100 (Foreign)",
+    timings: "Sunrise – Sunset (Fri closed)",
+    nearby: ["Agra Fort", "Fatehpur Sikri", "Itmad-ud-Daula", "Mehtab Bagh", "Akbar's Tomb"],
+    gallery: ["🌅", "🕌", "🌙", "💐", "🌿", "🏛️", "🌸", "✨"],
+    bgClass: "bg-taj"
+  },
+  kerala: {
+    title: "Kerala Backwaters",
+    tag: "Nature · Backwaters",
+    location: "📍 Alleppey (Alappuzha), Kerala",
+    desc: "The Kerala Backwaters are a network of interconnected canals, rivers, lakes, and inlets formed by more than 900 km of navigable waterways. The backwaters are an intrinsic part of Kerala's geography and culture, with a chain of lakes running parallel to the Arabian Sea coast. A houseboat cruise through these serene waters, flanked by swaying coconut palms, paddy fields, and quaint villages, is considered one of the most enchanting travel experiences in India. Alleppey — the 'Venice of the East' — is the primary hub. The Nehru Trophy Boat Race, held every August on Punnamada Lake, is a spectacular display of traditional Kerala culture.",
+    bestTime: "September – March",
+    fee: "Houseboat: ₹6,000–₹25,000/night",
+    timings: "All day (dawn mist is magical)",
+    nearby: ["Kumarakom Bird Sanctuary", "Vembanad Lake", "Marari Beach", "Kuttanad", "Thiruvizha"],
+    gallery: ["🛶", "🌴", "🌅", "🦆", "🌿", "🐟", "🌾", "🌊"],
+    bgClass: "bg-kerala"
+  },
+  varanasi: {
+    title: "Varanasi Ghats",
+    tag: "Religious · Spiritual",
+    location: "📍 Varanasi, Uttar Pradesh",
+    desc: "Varanasi, also known as Kashi or Benares, is one of the world's oldest continuously inhabited cities and the holiest city in Hinduism. Situated on the banks of the sacred Ganges river, its 88 ghats serve as steps descending to the river where pilgrims bathe, perform rituals, and cremate their dead. The Ganga Aarti ceremony at Dashashwamedh Ghat — a mesmerising evening ritual with fire, music, and chanting — draws thousands daily. Mark Twain once wrote that Varanasi is 'older than history, older than tradition, older even than legend.' The narrow winding lanes (gallis) are filled with temples, silk weavers, and the timeless rhythm of spiritual India.",
+    bestTime: "October – March",
+    fee: "Free (boat ride: ₹200–₹500)",
+    timings: "Ganga Aarti: 6:00–7:30 PM daily",
+    nearby: ["Sarnath", "Ramnagar Fort", "Kashi Vishwanath Temple", "Banaras Hindu University", "Assi Ghat"],
+    gallery: ["🪔", "🛶", "🌅", "🙏", "🌊", "🏛️", "🌸", "🎵"],
+    bgClass: "bg-varanasi"
+  },
+  hampi: {
+    title: "Hampi",
+    tag: "Heritage · Ruins",
+    location: "📍 Vijayanagara, Karnataka",
+    desc: "Hampi is a UNESCO World Heritage Site and one of the most captivating archaeological wonders in India. Once the capital of the powerful Vijayanagara Empire (14th–16th centuries), it was among the richest and most populous cities in the world. Today, over 1,600 ruins of temples, palaces, marketplaces, and military structures spread across a surreal boulder-strewn landscape on the banks of the Tungabhadra river. The Virupaksha Temple, the Vittala Temple Complex with its iconic stone chariot, the Lotus Mahal, and the elephant stables each tell the story of a civilisation at its zenith before its sudden destruction in 1565. Hampi is as much a spiritual experience as an architectural one.",
+    bestTime: "October – February",
+    fee: "₹40 (Indian) / ₹600 (Foreign)",
+    timings: "6:00 AM – 6:00 PM",
+    nearby: ["Virupaksha Temple", "Vittala Temple", "Lotus Mahal", "Tungabhadra Dam", "Anegundi"],
+    gallery: ["🏛️", "🗿", "🌅", "🏰", "🌿", "⛩️", "🪨", "🌄"],
+    bgClass: "bg-hampi"
+  },
+  ladakh: {
+    title: "Ladakh",
+    tag: "Adventure · High Altitude",
+    location: "📍 Leh, Ladakh (UT)",
+    desc: "Ladakh — the 'Land of High Passes' — is a breathtaking high-altitude desert plateau in the Himalayas, bordering Tibet and Pakistan. Situated at an average elevation of 3,500 metres, its stark, otherworldly landscapes of snow-capped peaks, turquoise lakes, ancient monasteries, and dramatic gorges have earned it the nickname 'Little Tibet.' Pangong Tso Lake, immortalised in Bollywood's 3 Idiots, shimmers in impossible shades of blue and green. Nubra Valley's Bactrian camels, the Zanskar river gorge, Khardung La pass, and the ancient monasteries of Thiksey and Hemis make Ladakh a bucket-list destination for adventurers and seekers alike.",
+    bestTime: "June – September",
+    fee: "Inner Line Permit required (₹600)",
+    timings: "Best in daylight; monasteries 7 AM–6 PM",
+    nearby: ["Pangong Tso", "Nubra Valley", "Zanskar", "Khardung La", "Hemis Monastery"],
+    gallery: ["⛰️", "🏔️", "🌊", "🐪", "🙏", "🌌", "🏔️", "🌅"],
+    bgClass: "bg-ladakh"
+  },
+  jaipur: {
+    title: "Jaipur",
+    tag: "Heritage · Pink City",
+    location: "📍 Jaipur, Rajasthan",
+    desc: "Jaipur, the 'Pink City' of India, is the capital of Rajasthan and the first planned city of modern India, founded in 1727 by Maharaja Jai Singh II. Its streets are painted in a distinctive terracotta pink — originally done in 1876 to welcome the Prince of Wales. Jaipur forms part of India's 'Golden Triangle' tourist circuit. The Amber Fort, a magnificent blend of Hindu and Mughal architecture, lords over the hilltop. The City Palace still houses the royal family. Hawa Mahal — the Palace of Winds — with its 953 windows was designed so royal ladies could observe street life without being seen. The vibrant bazaars overflow with block-printed textiles, gems, and handicrafts.",
+    bestTime: "October – March",
+    fee: "Composite ticket: ₹500 (Indian) / ₹1,000 (Foreign)",
+    timings: "Most forts open 9 AM – 5 PM",
+    nearby: ["Amber Fort", "Hawa Mahal", "City Palace", "Jantar Mantar", "Nahargarh Fort"],
+    gallery: ["🏰", "🐘", "🌅", "🛍️", "🎪", "💎", "🌸", "🎭"],
+    bgClass: "bg-jaipur"
+  },
+  goa: {
+    title: "Goa Beaches",
+    tag: "Beach · Coastal",
+    location: "📍 North Goa",
+    desc: "Goa, India's smallest state by area, packs an extraordinary variety of experiences into its 3,702 sq km of sun-drenched coastline. Its beaches — from the lively Baga and Calangute to the laid-back Palolem and serene Agonda — cater to every traveller. But Goa is more than beaches: its 450 years of Portuguese rule left behind whitewashed baroque churches (a UNESCO World Heritage cluster), a distinct Goan Konkani cuisine blending spices with coconut and feni, and an open, cosmopolitan culture unlike anywhere else in India. The Spice Plantations of the hinterland, the vibrant Saturday Night Market at Anjuna, and the Dudhsagar Waterfalls make Goa a year-round destination.",
+    bestTime: "November – February",
+    fee: "Beaches free; Heritage: ₹100–₹300",
+    timings: "Beaches: All day; Forts: 9 AM–5:30 PM",
+    nearby: ["Old Goa Churches", "Dudhsagar Falls", "Anjuna Market", "Chapora Fort", "Spice Plantations"],
+    gallery: ["🏖️", "🌊", "🌅", "⛪", "🌴", "🦀", "🍹", "🎸"],
+    bgClass: "bg-goa"
+  }
+};
+
+function openModal(id) {
+  const d = destinations[id];
+  if (!d) return;
+  document.getElementById('modalHero').style.cssText = `height:280px;position:relative;border-radius:20px 20px 0 0;overflow:hidden;`;
+  document.getElementById('modalHero').className = 'modal-hero dest-card-bg ' + d.bgClass;
+  document.getElementById('modalHero').innerHTML = `
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="deco">${d.gallery[0]}</div>
+  `;
+  document.getElementById('modalTag').textContent = d.tag;
+  document.getElementById('modalTitle').textContent = d.title;
+  document.getElementById('modalLocation').textContent = d.location;
+  document.getElementById('modalDesc').textContent = d.desc;
+  document.getElementById('modalBestTime').textContent = d.bestTime;
+  document.getElementById('modalFee').textContent = d.fee;
+  document.getElementById('modalTimings').textContent = d.timings;
+  document.getElementById('modalNearby').innerHTML = d.nearby.map(n =>
+    `<div class="nearby-tag">${n}</div>`).join('');
+  document.getElementById('modalGallery').innerHTML = d.gallery.map(g =>
+    `<div class="gallery-thumb"><div class="${d.bgClass.replace('bg-','place-')}">${g}</div></div>`).join('');
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeModalOnBg(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+function setCategory(el, val) {
+  document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('categoryFilter').value = val;
+  filterDestinations();
+}
+
+function filterByState(state) {
+  document.getElementById('stateFilter').value = state;
+  document.getElementById('destinations').scrollIntoView({ behavior: 'smooth' });
+  filterDestinations();
+}
+
+function filterDestinations() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const state = document.getElementById('stateFilter').value.toLowerCase();
+  const cat = document.getElementById('categoryFilter').value.toLowerCase();
+  const cards = document.querySelectorAll('.dest-card');
+  cards.forEach(card => {
+    const text = card.textContent.toLowerCase();
+    const match = (!q || text.includes(q)) &&
+                  (!state || text.includes(state)) &&
+                  (!cat || text.includes(cat));
+    card.style.display = match ? '' : 'none';
+  });
+}
+
+// Nav scroll effect
+window.addEventListener('scroll', () => {
+  document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 20);
+});
+
+function toggleMenu() {
+  const links = document.getElementById('navLinks');
+  links.classList.toggle('open');
+}
+
+// Close modal on Escape
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// Animate cards on scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.opacity = '1';
+      e.target.style.transform = e.target.dataset.transform || 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.state-card, .dest-card, .highlight-card').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(20px)';
+  el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+  observer.observe(el);
+});
+</script>
+</body>
+</html>
